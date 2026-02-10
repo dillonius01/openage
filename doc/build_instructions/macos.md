@@ -7,16 +7,19 @@
 ```
 brew update-reset && brew update
 brew install --cask font-dejavu
-brew install cmake python3 libepoxy freetype fontconfig harfbuzz opus opusfile qt6 libogg libpng toml11 eigen
-brew install llvm
-pip3 install --upgrade --break-system-packages cython numpy mako lz4 pillow pygments setuptools toml
+brew install cmake python3 libepoxy freetype fontconfig harfbuzz opus opusfile qt6 libogg libpng toml11 eigen@3
+brew install llvm flex make
+pip3 install --upgrade cython numpy mako lz4 pillow pygments setuptools toml
 ```
 
-You will also need [nyan](https://github.com/SFTtech/nyan/blob/master/doc/building.md) and its dependencies:
+**Note:** Use `eigen@3` instead of `eigen`. Homebrew's default `eigen` is now version 5.x which is
+incompatible with openage's `find_package(Eigen3 3.3)`. The `eigen@3` formula provides the required 3.x version.
 
-```
-brew install flex make
-```
+**Note:** If you are using Homebrew's Python (rather than a version manager like pyenv or asdf),
+add `--break-system-packages` to the `pip3 install` command above.
+
+You will also need [nyan](https://github.com/SFTtech/nyan/blob/master/doc/building.md) and its dependencies.
+The `flex` and `make` packages listed above cover nyan's requirements.
 
 Optionally, for documentation generation:
 
@@ -33,13 +36,22 @@ cd openage
 
 ## Building
 
-We advise against using the clang version that comes with macOS (Apple Clang) as it notoriously out of date and often causes compilation errors. Use homebrew's clang if you don't want any trouble. You can pass the path of homebrew clang to the openage `configure` script which will generate the CMake files for building:
+We advise against using the clang version that comes with macOS (Apple Clang) as it is notoriously out of date and often causes compilation errors. Use homebrew's clang if you don't want any trouble. You can pass the path of homebrew clang to the openage `configure` script which will generate the CMake files for building.
+
+Since both `llvm` and `eigen@3` are keg-only (not symlinked into `/opt/homebrew`), you need to
+tell CMake where to find Eigen and tell the linker to use homebrew's libc++:
 
 ```
-# on Intel macOS, llvm is by default in /usr/local/Cellar/llvm/bin/
-# on ARM macOS, llvm is by default in /opt/homebrew/Cellar/llvm/bin/
-./configure --compiler="$(brew --prefix llvm)/bin/clang++" --download-nyan
+CMAKE_PREFIX_PATH="$(brew --prefix eigen@3)" ./configure \
+  --compiler="$(brew --prefix llvm)/bin/clang++" \
+  --download-nyan \
+  --flags="-I$(brew --prefix eigen@3)/include" \
+  --ldflags="-L$(brew --prefix llvm)/lib/c++ -L$(brew --prefix llvm)/lib/unwind -lunwind"
 ```
+
+Without the `--ldflags`, you may see linker errors about missing `std::__1::__hash_memory` when
+building the nyan dependency, because homebrew clang's headers reference symbols not present in
+the macOS system libc++.
 
 Afterwards, trigger the build using `make`:
 
