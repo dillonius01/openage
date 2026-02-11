@@ -21,6 +21,7 @@ static constexpr auto GL_PIXEL_FORMAT = datastructure::create_const_map<resource
 	// TODO check correctness of formats here
 	std::pair(resources::pixel_format::r16ui, std::tuple(GL_R16UI, GL_RED_INTEGER, GL_UNSIGNED_INT)),
 	std::pair(resources::pixel_format::r32ui, std::tuple(GL_R32UI, GL_RED_INTEGER, GL_UNSIGNED_INT)),
+	std::pair(resources::pixel_format::r32f, std::tuple(GL_R32F, GL_RED, GL_FLOAT)),
 	std::pair(resources::pixel_format::rgb8, std::tuple(GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE)),
 	std::pair(resources::pixel_format::bgr8, std::tuple(GL_RGB8, GL_BGR, GL_UNSIGNED_BYTE)),
 	std::pair(resources::pixel_format::rgba8, std::tuple(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE)),

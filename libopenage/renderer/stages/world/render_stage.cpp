@@ -111,7 +111,7 @@ void WorldRenderStage::update() {
 void WorldRenderStage::resize(size_t width, size_t height) {
 	this->output_texture = renderer->add_texture(resources::Texture2dInfo(width, height, resources::pixel_format::rgba8));
 	this->depth_texture = renderer->add_texture(resources::Texture2dInfo(width, height, resources::pixel_format::depth24));
-	this->id_texture = renderer->add_texture(resources::Texture2dInfo(width, height, resources::pixel_format::r32ui));
+	this->id_texture = renderer->add_texture(resources::Texture2dInfo(width, height, resources::pixel_format::r32f));
 
 	auto fbo = this->renderer->create_texture_target({this->output_texture, this->depth_texture, this->id_texture});
 	this->render_pass->set_target(fbo);
@@ -136,7 +136,7 @@ void WorldRenderStage::initialize_render_pass(size_t width,
 
 	this->output_texture = renderer->add_texture(resources::Texture2dInfo(width, height, resources::pixel_format::rgba8));
 	this->depth_texture = renderer->add_texture(resources::Texture2dInfo(width, height, resources::pixel_format::depth24));
-	this->id_texture = renderer->add_texture(resources::Texture2dInfo(width, height, resources::pixel_format::r32ui));
+	this->id_texture = renderer->add_texture(resources::Texture2dInfo(width, height, resources::pixel_format::r32f));
 
 	this->display_shader = this->renderer->add_shader({vert_shader_src, frag_shader_src});
 	this->display_shader->bind_uniform_buffer("camera", this->camera->get_uniform_buffer());

@@ -24,6 +24,8 @@ enum class pixel_format {
 	r16ui,
 	/// 32 bits per pixel, unsigned integer, single channel
 	r32ui,
+	/// 32 bits per pixel, float, single channel
+	r32f,
 	/// 24 bits per pixel, float, RGB order
 	rgb8,
 	/// 24 bits per pixel, float, BGR order
@@ -47,6 +49,7 @@ constexpr size_t pixel_size(pixel_format fmt) {
 	constexpr auto pix_size = datastructure::create_const_map<pixel_format, size_t>(
 		std::make_pair(pixel_format::r16ui, 2),
 		std::make_pair(pixel_format::r32ui, 4),
+		std::make_pair(pixel_format::r32f, 4),
 		std::make_pair(pixel_format::rgb8, 3),
 		std::make_pair(pixel_format::bgr8, 3),
 		std::make_pair(pixel_format::rgba8, 4),

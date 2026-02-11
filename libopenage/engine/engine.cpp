@@ -53,8 +53,14 @@ Engine::Engine(mode mode,
 		this->time_loop.reset();
 	});
 
-	// if presenter is used, run it in a separate thread
 	if (this->run_mode == mode::FULL) {
+#ifdef __APPLE__
+		// macOS requires Qt/Cocoa GUI initialization on the main thread.
+		// Run the simulation in a background thread and keep the presenter
+		// on the main thread (started in loop()).
+		this->presenter_window_settings = window_settings;
+#else
+		// On other platforms, run the presenter in a separate thread
 		this->threads.emplace_back([&]() {
 			this->presenter->run(window_settings);
 
@@ -63,6 +69,7 @@ Engine::Engine(mode mode,
 			this->presenter.reset();
 			this->running = false;
 		});
+#endif
 	}
 
 	log::log(INFO << "Using " << this->threads.size() + 1 << " threads "
@@ -70,6 +77,25 @@ Engine::Engine(mode mode,
 }
 
 void Engine::loop() {
+#ifdef __APPLE__
+	if (this->run_mode == mode::FULL) {
+		// On macOS, run the simulation in a background thread
+		// and run the presenter (Qt/GUI) on the main thread.
+		this->threads.emplace_back([&]() {
+			this->simulation->run();
+			this->simulation.reset();
+		});
+
+		this->presenter->run(this->presenter_window_settings);
+		this->presenter.reset();
+		this->running = false;
+	}
+	else {
+		this->simulation->run();
+		this->simulation.reset();
+		this->running = false;
+	}
+#else
 	// Run the main game simulation loop:
 	this->simulation->run();
 
@@ -78,6 +104,7 @@ void Engine::loop() {
 	if (this->run_mode != mode::FULL) {
 		this->running = false;
 	}
+#endif
 }
 
 } // namespace openage::engine

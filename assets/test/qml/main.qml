@@ -2,7 +2,6 @@
 
 import QtQuick 2.4
 import yay.sfttech.livereload 1.0
-import yay.sfttech.openage 1.0 as OA
 
 Item {
 	id: root

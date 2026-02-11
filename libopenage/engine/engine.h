@@ -134,6 +134,15 @@ private:
 	 * Video/audio/input management. Can be nullptr in headless mode.
 	 */
 	std::shared_ptr<presenter::Presenter> presenter;
+
+#ifdef __APPLE__
+	/**
+	 * Saved window settings for deferred presenter startup on macOS.
+	 * macOS requires the GUI to run on the main thread, so the presenter
+	 * is started in loop() instead of the constructor.
+	 */
+	renderer::window_settings presenter_window_settings;
+#endif
 };
 
 } // namespace engine
